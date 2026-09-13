@@ -1,0 +1,3 @@
+/home/vnt0x04/GAMEBOY/build/CMakeFiles/gameboy.dir
+/home/vnt0x04/GAMEBOY/build/CMakeFiles/edit_cache.dir
+/home/vnt0x04/GAMEBOY/build/CMakeFiles/rebuild_cache.dir
