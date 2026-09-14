@@ -1246,197 +1246,266 @@ void rst_38h(Sharp_SM83 *cpu) {
    CB-PREFIXED INSTRUCTIONS — Sharp SM83 (Game Boy)
 */
 
-void cb_rlc_b(Sharp_SM83 *cpu) {
+void cb_update_flags(Sharp_SM83 *cpu, uint8_t result,  uint8_t bit) {
 
+    cpu_set_flag(cpu, FLAG_Z, result == 0);
+    cpu_set_flag(cpu, FLAG_N, 0);
+    cpu_set_flag(cpu, FLAG_H, 0);  
+    cpu_set_flag(cpu, FLAG_C, bit);
+}
+
+uint8_t alu_rlc(Sharp_SM83 *cpu, uint8_t d) {
+    uint8_t bit7 = (d & 0x80) >> 7;
+    d <<= 1;
+    uint8_t result = d | (bit7 << 0);
+
+    cb_update_flags(cpu, result, bit7);
+    return result;
+}
+
+void cb_rlc_b(Sharp_SM83 *cpu) {
+    cpu->regs.B = alu_rlc(cpu, cpu->regs.B);
 }
 
 void cb_rlc_c(Sharp_SM83 *cpu) {
-
+    cpu->regs.C = alu_rlc(cpu, cpu->regs.C);
 }
 
 void cb_rlc_d(Sharp_SM83 *cpu) {
-
+    cpu->regs.D = alu_rlc(cpu, cpu->regs.D);
 }
 
 void cb_rlc_e(Sharp_SM83 *cpu) {
-
+    cpu->regs.E = alu_rlc(cpu, cpu->regs.E);
 }
 
 void cb_rlc_h(Sharp_SM83 *cpu) {
-
+    cpu->regs.H = alu_rlc(cpu, cpu->regs.H);
 }
 
 void cb_rlc_l(Sharp_SM83 *cpu) {
-
+    cpu->regs.L = alu_rlc(cpu, cpu->regs.L);
 }
 
-void cb_rlc_hl(Sharp_SM83 *cpu) {
-
+void cb_rlc_hl(Sharp_SM83 *cpu, Sharp_MMU *mmu) {
+    uint8_t d8 = mmu_read(mmu, cpu->regs.HL);
+    mmu_write8(mmu, cpu->regs.HL, alu_rlc(cpu, d8));
 }
 
 void cb_rlc_a(Sharp_SM83 *cpu) {
+    cpu->regs.A = alu_rlc(cpu, cpu->regs.A);
+}
 
+uint8_t alu_rrc(Sharp_SM83 *cpu, uint8_t d) {
+    uint8_t bit0 = (d & 0x01);
+    d >>= 1;
+    uint8_t result = d | bit0 << 7;
+
+    cb_update_flags(cpu, result, bit0);
+    return result;
 }
 
 void cb_rrc_b(Sharp_SM83 *cpu) {
-
+    cpu->regs.B = alu_rrc(cpu, cpu->regs.B);
 }
 
 void cb_rrc_c(Sharp_SM83 *cpu) {
-
+    cpu->regs.C = alu_rrc(cpu, cpu->regs.C);
 }
 
 void cb_rrc_d(Sharp_SM83 *cpu) {
-
+    cpu->regs.D = alu_rrc(cpu, cpu->regs.D);
 }
 
 void cb_rrc_e(Sharp_SM83 *cpu) {
-
-}
+    cpu->regs.E = alu_rrc(cpu, cpu->regs.E);
+}   
 
 void cb_rrc_h(Sharp_SM83 *cpu) {
-
+    cpu->regs.H = alu_rrc(cpu, cpu->regs.H);
 }
 
 void cb_rrc_l(Sharp_SM83 *cpu) {
-
+    cpu->regs.L = alu_rrc(cpu, cpu->regs.L);
 }
 
-void cb_rrc_hl(Sharp_SM83 *cpu) {
-
+void cb_rrc_hl(Sharp_SM83 *cpu, Sharp_MMU *mmu) {
+    uint8_t d8 = mmu_read(mmu, cpu->regs.HL);
+    mmu_write8(mmu, cpu->regs.HL, alu_rrc(cpu, d8));
 }
 
 void cb_rrc_a(Sharp_SM83 *cpu) {
+    cpu->regs.A = alu_rrc(cpu, cpu->regs.A);
+}
 
+uint8_t alu_rl(Sharp_SM83 *cpu, uint8_t d) {
+    uint8_t bit7 = (d & 0x80) >> 7;
+    bit7 <<= 1;
+    uint8_t result = bit7 | (get_flag(cpu, FLAG_C) << 0);
+
+    cb_update_flags(cpu, result, bit7);
+    return result;
 }
 
 void cb_rl_b(Sharp_SM83 *cpu) {
-
+    cpu->regs.B = alu_rl(cpu, cpu->regs.B);
 }
 
 void cb_rl_c(Sharp_SM83 *cpu) {
-
+    cpu->regs.C = alu_rl(cpu, cpu->regs.C);
 }
 
 void cb_rl_d(Sharp_SM83 *cpu) {
-
+    cpu->regs.D = alu_rl(cpu, cpu->regs.D);
 }
 
 void cb_rl_e(Sharp_SM83 *cpu) {
-
+    cpu->regs.E = alu_rl(cpu, cpu->regs.E);
 }
 
 void cb_rl_h(Sharp_SM83 *cpu) {
-
+    cpu->regs.H = alu_rl(cpu, cpu->regs.H);
 }
 
 void cb_rl_l(Sharp_SM83 *cpu) {
-
+    cpu->regs.L = alu_rl(cpu, cpu->regs.L);
 }
 
-void cb_rl_hl(Sharp_SM83 *cpu) {
-
+void cb_rl_hl(Sharp_SM83 *cpu, Sharp_MMU *mmu) {
+    uint8_t d8 = mmu_read(mmu, cpu->regs.HL);
+    mmu_write8(mmu, cpu->regs.HL, alu_rl(cpu, d8));
 }
 
 void cb_rl_a(Sharp_SM83 *cpu) {
+    cpu->regs.A = alu_rl(cpu, cpu->regs.A);
+}
 
+uint8_t alu_rr(Sharp_SM83 *cpu, uint8_t d) {
+    uint8_t bit0 = (d & 0x01);
+    d >>= 1;
+    uint8_t result = d | (get_flag(cpu, FLAG_C) << 7);
+
+    cb_update_flags(cpu, result, bit0);
+    return result;
 }
 
 void cb_rr_b(Sharp_SM83 *cpu) {
-
+    cpu->regs.B = alu_rr(cpu, cpu->regs.B);
 }
 
 void cb_rr_c(Sharp_SM83 *cpu) {
-
+    cpu->regs.C = alu_rr(cpu, cpu->regs.C);
 }
 
 void cb_rr_d(Sharp_SM83 *cpu) {
-
+    cpu->regs.D = alu_rr(cpu, cpu->regs.D);
 }
 
 void cb_rr_e(Sharp_SM83 *cpu) {
-
+    cpu->regs.E = alu_rr(cpu, cpu->regs.E);
 }
 
 void cb_rr_h(Sharp_SM83 *cpu) {
-
+    cpu->regs.H = alu_rr(cpu, cpu->regs.H);
 }
 
 void cb_rr_l(Sharp_SM83 *cpu) {
-
+    cpu->regs.L = alu_rr(cpu, cpu->regs.L);
 }
 
-void cb_rr_hl(Sharp_SM83 *cpu) {
-
+void cb_rr_hl(Sharp_SM83 *cpu, Sharp_MMU *mmu) {
+    uint8_t d8 = mmu_read(mmu, cpu->regs.HL);
+    mmu_write8(mmu, cpu->regs.HL, alu_rr(cpu, d8));
 }
 
 void cb_rr_a(Sharp_SM83 *cpu) {
-
+    cpu->regs.A = alu_rr(cpu, cpu->regs.A);
 }
 
-void cb_sla_b(Sharp_SM83 *cpu) {
-
+uint8_t alu_sla(Sharp_SM83 *cpu, uint8_t d) {
+    uint8_t bit7 = (d & 0x80) >> 7; 
+    uint8_t result = d << 1;   
+    
+    cb_update_flags(cpu, result, bit7);
+    return result;
 }
 
-void cb_sla_c(Sharp_SM83 *cpu) {
-
+void cb_sla_b(Sharp_SM83 *cpu) { 
+    cpu->regs.B = alu_sla(cpu, cpu->regs.B); 
 }
 
-void cb_sla_d(Sharp_SM83 *cpu) {
-
+void cb_sla_c(Sharp_SM83 *cpu) { 
+    cpu->regs.C = alu_sla(cpu, cpu->regs.C); 
 }
 
-void cb_sla_e(Sharp_SM83 *cpu) {
-
+void cb_sla_d(Sharp_SM83 *cpu) { 
+    cpu->regs.D = alu_sla(cpu, cpu->regs.D); 
 }
 
-void cb_sla_h(Sharp_SM83 *cpu) {
-
+void cb_sla_e(Sharp_SM83 *cpu) { 
+    cpu->regs.E = alu_sla(cpu, cpu->regs.E); 
 }
 
-void cb_sla_l(Sharp_SM83 *cpu) {
-
+void cb_sla_h(Sharp_SM83 *cpu) { 
+    cpu->regs.H = alu_sla(cpu, cpu->regs.H); 
 }
 
-void cb_sla_hl(Sharp_SM83 *cpu) {
-
+void cb_sla_l(Sharp_SM83 *cpu) { 
+    cpu->regs.L = alu_sla(cpu, cpu->regs.L); 
 }
 
-void cb_sla_a(Sharp_SM83 *cpu) {
-
+void cb_sla_hl(Sharp_SM83 *cpu, Sharp_MMU *mmu) {
+    uint8_t d8 = mmu_read(mmu, cpu->regs.HL);
+    d8 = alu_sla(cpu, d8);
+    mmu_write8(mmu, cpu->regs.HL, d8);
 }
+
+void cb_sla_a(Sharp_SM83 *cpu) { 
+    cpu->regs.A = alu_sla(cpu, cpu->regs.A); 
+}
+
+uint8_t alu_sra(Sharp_SM83 *cpu, uint8_t d) {
+    uint8_t bit0 = d & 0x01;
+    uint8_t bit7 = d & 0x80;
+
+    uint8_t result = (d >> 1) | bit7; 
+    cb_update_flags(cpu, result, bit0);
+    return result;
+}
+
 
 void cb_sra_b(Sharp_SM83 *cpu) {
-
+    cpu->regs.B = alu_sra(cpu, cpu->regs.B);
 }
 
 void cb_sra_c(Sharp_SM83 *cpu) {
-
+    cpu->regs.C = alu_sra(cpu, cpu->regs.C);
 }
 
 void cb_sra_d(Sharp_SM83 *cpu) {
-
+    cpu->regs.D = alu_sra(cpu, cpu->regs.D);
 }
 
 void cb_sra_e(Sharp_SM83 *cpu) {
-
+    cpu->regs.E = alu_sra(cpu, cpu->regs.E);
 }
 
 void cb_sra_h(Sharp_SM83 *cpu) {
-
+    cpu->regs.H = alu_sra(cpu, cpu->regs.H);
 }
 
 void cb_sra_l(Sharp_SM83 *cpu) {
-
+    cpu->regs.L = alu_sra(cpu, cpu->regs.L);
 }
 
-void cb_sra_hl(Sharp_SM83 *cpu) {
-
+void cb_sra_hl(Sharp_SM83 *cpu, Sharp_MMU *mmu) {
+    uint8_t d8 = mmu_read(mmu, cpu->regs.HL);
+    mmu_write8(mmu, cpu->regs.HL, alu_sra(cpu, d8));
 }
 
 void cb_sra_a(Sharp_SM83 *cpu) {
-
-}
+    cpu->regs.A = alu_sra(cpu, cpu->regs.A);
+}   
 
 void cb_swap_b(Sharp_SM83 *cpu) {
 

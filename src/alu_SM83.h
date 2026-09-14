@@ -2795,6 +2795,11 @@ void rst_38h(Sharp_SM83 *cpu);
    flags: Z 0 0 C
 */
 
+
+/* Updates flags for CB-PREFIXED instructions */
+void cb_update_flags(Sharp_SM83 *cpu, uint8_t result, uint8_t bit);
+
+
 /*
     Rotates B register left circularly. Bit 7 is copied into C flag and bit 0.
     ref.assem: RLC B
@@ -2870,7 +2875,7 @@ void cb_rlc_l(Sharp_SM83 *cpu);
         - 16 cycles to be completed
         - flags updated: Z 0 0 C
 */
-void cb_rlc_hl(Sharp_SM83 *cpu);
+void cb_rlc_hl(Sharp_SM83 *cpu, Sharp_MMU *mmu);
 
 /*
     Rotates A register left circularly. Bit 7 is copied into C flag and bit 0.
@@ -2888,6 +2893,8 @@ void cb_rlc_a(Sharp_SM83 *cpu);
    Opcodes 0xCB08 – 0xCB0F
    flags: Z 0 0 C
 */
+
+uint8_t alu_rrc(Sharp_SM83 *cpu, uint8_t d);
 
 /*
     Rotates B register right circularly. Bit 0 is copied into C flag and bit 7.
@@ -2964,7 +2971,7 @@ void cb_rrc_l(Sharp_SM83 *cpu);
         - 16 cycles to be completed
         - flags updated: Z 0 0 C
 */
-void cb_rrc_hl(Sharp_SM83 *cpu);
+void cb_rrc_hl(Sharp_SM83 *cpu, Sharp_MMU *mmu);
 
 /*
     Rotates A register right circularly. Bit 0 is copied into C flag and bit 7.
@@ -2982,6 +2989,8 @@ void cb_rrc_a(Sharp_SM83 *cpu);
    Opcodes 0xCB10 – 0xCB17
    flags: Z 0 0 C
 */
+
+uint8_t alu_rl(Sharp_SM83 *cpu, uint8_t d);
 
 /*
     Rotates B register left through the Carry flag. Bit 7 is copied into C flag, old C flag into bit 0.
@@ -3058,7 +3067,7 @@ void cb_rl_l(Sharp_SM83 *cpu);
         - 16 cycles to be completed
         - flags updated: Z 0 0 C
 */
-void cb_rl_hl(Sharp_SM83 *cpu);
+void cb_rl_hl(Sharp_SM83 *cpu, Sharp_MMU *mmu);
 
 /*
     Rotates A register left through the Carry flag. Bit 7 is copied into C flag, old C flag into bit 0.
@@ -3076,6 +3085,8 @@ void cb_rl_a(Sharp_SM83 *cpu);
    Opcodes 0xCB18 – 0xCB1F
    flags: Z 0 0 C
 */
+
+uint8_t alu_rr(Sharp_SM83 *cpu, uint8_t d);
 
 /*
     Rotates B register right through the Carry flag. Bit 0 is copied into C flag, old C flag into bit 7.
@@ -3152,7 +3163,7 @@ void cb_rr_l(Sharp_SM83 *cpu);
         - 16 cycles to be completed
         - flags updated: Z 0 0 C
 */
-void cb_rr_hl(Sharp_SM83 *cpu);
+void cb_rr_hl(Sharp_SM83 *cpu, Sharp_MMU *mmu);
 
 /*
     Rotates A register right through the Carry flag. Bit 0 is copied into C flag, old C flag into bit 7.
@@ -3170,6 +3181,8 @@ void cb_rr_a(Sharp_SM83 *cpu);
    Opcodes 0xCB20 – 0xCB27
    flags: Z 0 0 C
 */
+
+uint8_t alu_sla(Sharp_SM83 *cpu, uint8_t d);
 
 /*
     Shifts B register left arithmetically. Bit 7 is copied into C flag, bit 0 is set to 0.
@@ -3246,7 +3259,7 @@ void cb_sla_l(Sharp_SM83 *cpu);
         - 16 cycles to be completed
         - flags updated: Z 0 0 C
 */
-void cb_sla_hl(Sharp_SM83 *cpu);
+void cb_sla_hl(Sharp_SM83 *cpu, Sharp_MMU *mmu);
 
 /*
     Shifts A register left arithmetically. Bit 7 is copied into C flag, bit 0 is set to 0.
@@ -3264,6 +3277,8 @@ void cb_sla_a(Sharp_SM83 *cpu);
    Opcodes 0xCB28 – 0xCB2F
    flags: Z 0 0 0
 */
+
+uint8_t alu_sra(Sharp_SM83 *cpu, uint8_t d);
 
 /*
     Shifts B register right arithmetically. Bit 0 is copied into C flag, bit 7 retains its value.
@@ -3340,7 +3355,7 @@ void cb_sra_l(Sharp_SM83 *cpu);
         - 16 cycles to be completed
         - flags updated: Z 0 0 0
 */
-void cb_sra_hl(Sharp_SM83 *cpu);
+void cb_sra_hl(Sharp_SM83 *cpu, Sharp_MMU *mmu);
 
 /*
     Shifts A register right arithmetically. Bit 0 is copied into C flag, bit 7 retains its value.

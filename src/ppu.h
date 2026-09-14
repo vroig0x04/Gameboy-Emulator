@@ -12,9 +12,11 @@
 #ifndef PPU_H
 #define PPU_H
 
-#define FRAME 154     // number of scanlines
-#define SCN_DRAW 144  // scanlines where screen is drown from top to bottom
-#define FPS 59.7      // the Game Boy runs slightly slower than 60 Hz, as one frame takes ~16.74 ms. 70224 dots
+#define DOTS 456        // number of cycles of PPU to draw one line (one scanline)
+#define SCANLINES 154   // number of scanlines
+#define SCN_HEIGHT 144  // scanlines where screen is drown from top to bottom
+#define SCN_WIDTH 160
+#define FPS 59.7        // the Game Boy runs slightly slower than 60 Hz, as one frame takes ~16.74 ms. 70224 dots
 
 
 /* The PPU is in charge of rendering the calculus performed by the CPU and is
@@ -33,29 +35,42 @@ LCD & PPU enable	Window tile map	Window enable	BG & Window tiles	BG tile map	  O
 
 */
 
-
 typedef struct {
+    uint8_t LCDC; // LCD control (0xFF40)
+    uint8_t STAT; // LCD state (0xFF41)
+    uint8_t SCY;  // Y background displacement (0xFF42)
+    uint8_t SCX;  // X background displacement (0xFF43) 
+    uint8_t LY;   // LCD current line (0xFF44)
+    uint8_t LYC;  // LY comparison (0xFF45)
+    uint8_t DMA;  // DMA transfer (0xFF46)
+    uint8_t BGP;  // Background palette (0XFF47)
+    uint8_t OBP0; // Object palette 0 (0xFF48)
+    uint8_t OBP1; // Object palette 1 (0xFF49)
+    uint8_t WY;   // Y window position (0XFF4A)
+    uint8_t WX;   // X window position (0XFF4B)
+    
+    int current_dot; // counter of cycles from 0 to 455 
 
+    uint8_t screen_buffer[SCN_HEIGHT * SCN_WIDTH]; // buffer to store rendered pixels
 
-
-    uint8_t LCDC;
-    uint8_t LY;
-    uint8_t SCY;
-    uint8_t SCX;
-    uint8_t DMA;
-    uint8_t DMG;
-
+    uint8_t current_mode;
+    uint8_t last_mode;
     int CGB_CMG_MODE;
+
 } PPU;
 
 /* all this modes are cycled during a one single PPU frame */
 typedef enum {
-    HORIZONTAL_BLANK = 0, // 87 - 204 dots
-    DRAWING_PIXELS   = 1, // 172 - 289 dots
-    OAM_SCAN         = 2, // 80 dots, 160 bytes 
-    LENGTH           = 3 // minimum mode 3 length: 160 + 12 = 172 dots. (screen will be scaled)
+    MODE_OAM_SCAN         = 2, // 0 - 79 dots, 160 bytes 
+    MODE_DRAWING_PIXELS   = 3, // 80 - 251 dots    
+    MODE_HORIZONTAL_BLANK = 0, // 252 - 455 dots
+    MODE_VERTICAL_BLANK   = 1, // 144 - 153 scanlines
+    
 } PPU_Mode;
 
-void PPU_Init_Regs(PPU *ppu);
+void PPU_Init(PPU *ppu);
+/* advance PPU ticks acordding to current CPU cycles */
+void PPU_Advance(PPU *ppu, int cycles); 
+void PPU_RenderScanline(PPU *ppu);
 
 #endif

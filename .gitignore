@@ -1,0 +1,37 @@
+# AGREGAR SUBMÓDULO
+git submodule add <URL-del-repositorio> <ruta-local>
+git submodule add https://github.com/libsdl-org/SDL.git SDL
+
+# CLONAR PROYECTO CON SUBMÓDULOS
+git clone --recursive <URL-del-proyecto>
+git clone --recursive https://github.com/vroig0x04/Gameboy-Emulator.git
+
+# INICIALIZAR SUBMÓDULOS (después de clonar sin --recursive)
+git submodule update --init --recursive
+
+# ACTUALIZAR SUBMÓDULOS A ÚLTIMA VERSIÓN
+git submodule update --remote
+
+# ACTUALIZAR SUBMÓDULO ESPECÍFICO
+git submodule update --remote SDL
+
+# VER ESTADO DE SUBMÓDULOS
+git submodule status
+
+# CAMBIAR URL DE SUBMÓDULO
+git config --file=.gitmodules submodule.SDL.url https://nueva-url.git
+git submodule sync
+
+# ELIMINAR SUBMÓDULO
+git rm --cached SDL
+rm -rf SDL
+git add .gitmodules
+git commit -m "Remove SDL submodule"
+
+# HACER COMMIT CON CAMBIOS EN SUBMÓDULO
+git add .gitmodules SDL
+git commit -m "Update SDL submodule"
+
+# PUSH CON SUBMÓDULOS
+git push origin main
+git push origin main --force-with-lease
