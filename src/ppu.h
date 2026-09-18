@@ -8,14 +8,17 @@
  ******************************************************************************/
 
 #include <stdint.h>
+#include "mmu.h"
 
 #ifndef PPU_H
 #define PPU_H
 
 #define DOTS 456        // number of cycles of PPU to draw one line (one scanline)
 #define SCANLINES 154   // number of scanlines
-#define SCN_HEIGHT 144  // scanlines where screen is drown from top to bottom
-#define SCN_WIDTH 160
+#define SCN_HEIGHT 144  // window height
+#define SCN_WIDTH 160   // window width
+#define DMG_OAM 160     // 160 bytes in total, 40 sprites 4 bytes each
+#define MAX_SPRITES 40  // maximum number of sprites to read from OAM 
 #define FPS 59.7        // the Game Boy runs slightly slower than 60 Hz, as one frame takes ~16.74 ms. 70224 dots
 
 
@@ -50,12 +53,13 @@ typedef struct {
     uint8_t WX;   // X window position (0XFF4B)
     
     int current_dot; // counter of cycles from 0 to 455 
+    int window_line; // line counter of window 
 
     uint8_t screen_buffer[SCN_HEIGHT * SCN_WIDTH]; // buffer to store rendered pixels
 
     uint8_t current_mode;
     uint8_t last_mode;
-    int CGB_CMG_MODE;
+    int CGB_DMG_MODE;
 
 } PPU;
 
@@ -68,9 +72,32 @@ typedef enum {
     
 } PPU_Mode;
 
+/*  Sprite structure definition 
+  
+    flags information:
+        -Bit 7: if set to 0, the sprite is drawn on top of the background, if 
+         0 the window covers the sprite
+        -Bit 6: if set to 1, the sprite is inversely drawn
+        -Bit 5: if set to 1, the sprite is horizonal and inversely drawn
+        -Bit 4: Defines what palette of objects to use. If 0: 0BP0, if 1: OBP1
+
+        Bits 3-0 are reserved for CGB mode. 
+
+        The gameboy is only able of drawing a total of 10 sprites per horizontal line
+*/
+typedef struct {
+    uint8_t y;  // y position on screen + 16
+    uint8_t x;  // x psition on screen + 8
+    uint8_t tile_index; // tile number (8x8 or 8x16)
+    uint8_t flags;  // other useful sprite information
+
+    int OAM_index;
+
+} Sprite;
+
 void PPU_Init(PPU *ppu);
-/* advance PPU ticks acordding to current CPU cycles */
-void PPU_Advance(PPU *ppu, int cycles); 
-void PPU_RenderScanline(PPU *ppu);
+void PPU_Advance(PPU *ppu, int cycles);  // advance PPU ticks acordding to current CPU cycles 
+void PPU_RenderScanline(PPU *ppu, Sharp_MMU *mmu);
+void PPU_RenderSprites(PPU *ppu, Sharp_MMU *mmu);
 
 #endif

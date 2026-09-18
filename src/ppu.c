@@ -8,10 +8,16 @@
  * medium, is strictly prohibited. Proprietary and confidential.
  ******************************************************************************/
 
+/**
+ * Gameboy's Picture Processing Unit (PPU). 
+ * The PPU is in charge of rendering the background and sprites from VRAM to the screen. 
+ * 
+ */
+
 #include "ppu.h"
 
+/* PPU registers are initzialiced to 0 since Boot ROM (256 bytes) will change their values */
 void PPU_Init(PPU *ppu) {
-    /* PPU registers are initzialiced to 0 since Boot ROM (256 bytes) will change their values */
     ppu->LCDC = 0;
     ppu->STAT = 0;
     ppu->SCY  = 0;
@@ -37,6 +43,7 @@ void PPU_Advance(PPU *ppu, int cycles) {
         
         if (ppu->LY == SCANLINES) {
             ppu->LY = 0;
+            ppu->window_line = 0;
         }
     }
 
@@ -83,6 +90,121 @@ void PPU_Advance(PPU *ppu, int cycles) {
 
 }
 
-void PPU_RenderScanline(PPU *ppu) {
+static int PPU_window_check(PPU *ppu, int pixel_x) {
+    if (
+        (ppu->LCDC >> 5) & 0x01 == 1 &&
+        (ppu->LY >= ppu->WY) &&
+        (pixel_x >= ppu->WX - 7)
+    ) {
+        return 1;
+    }
+    return 0;
+}
 
+/*  In order to perform rendering, the scanline method is used for simplicity 
+    and performance. The original Gameboy used FIFO rendering based on a way more
+    complex algorithm for accomplishing the same results.
+
+    The Gameboy has two accessible background maps depending on whether the bit 3 
+    of the LCDC register is active or not. Therefore, if bit 3 is 0, the background is found
+    between addresses 0x9800 - 0x9BFF and if bit 3 is 1 the backround is found between 0x9C00 - 0x9FFF
+
+    The window has also its own line counter that must be restarted when the window was at least one time active
+    during the scanline. This window is likely to be activated by games to display constant and non-scrollable features. 
+
+*/
+void PPU_RenderScanline(PPU *ppu, Sharp_MMU *mmu) {
+    int was_window_active = 0;
+
+    for (int pixel_x = 0; pixel_x < SCN_WIDTH; pixel_x++) {
+
+        uint16_t map_addr;
+        int cord_x, cord_y;
+        if (!PPU_window_check(ppu, pixel_x)) 
+        {
+            cord_x = (pixel_x + ppu->SCX) % 256;
+            cord_y = (ppu->LY + ppu->SCY) % 256;
+            map_addr = (ppu->LCDC & (1 << 3)) ? 0x9c00 : 0x9800;
+
+        } else 
+        {
+            cord_x = pixel_x - (ppu->WX - 7);
+            cord_y = ppu->LY - ppu->WY;
+            map_addr = (ppu->LCDC & (1 << 6)) ? 0x9c00 : 0x9800;
+        }
+        
+        int drw_col = cord_x % 8;
+        int drw_row = cord_y % 8;
+        
+        int y_tile = cord_y / 8;
+        int x_tile = cord_x / 8;
+
+        uint16_t tile_index = (y_tile * 32) + y_tile;
+        uint16_t tile_id_addr = map_addr + tile_index;
+        uint8_t tile_id = mmu_read(mmu, tile_id_addr);
+
+        uint16_t tile_data_addr;
+
+        if (ppu->LCDC & (1 << 4)) { /* Unsigend mode (0x8000)*/
+            tile_data_addr = 0x8000 + (tile_id * 16); 
+        } else { /* Signed mode (0x8800 / Base 0x9000)*/
+            tile_data_addr = 0x9000 + ((int8_t)tile_id * 16);
+        }
+
+        uint8_t byte1 = mmu_read(mmu, tile_data_addr + (drw_row * 2));
+        uint8_t byte2 = mmu_read(mmu, tile_data_addr + (drw_row * 2) + 1);
+
+        int l_bit = 7 - drw_col;
+
+        uint8_t bit1 = (byte2 >> l_bit) & 1;
+        uint8_t bit0 = (byte1 >> l_bit) & 1;
+        uint8_t color_id = (bit1 << 1) | bit0;
+
+        // get final color from BGP register since each color is 2 bits in the register: color_id * 2
+        uint8_t color = (ppu->BGP >> (color_id * 2)) & 0x03;
+
+        int buff_pos = (ppu->LY * 160) + pixel_x;
+        ppu->screen_buffer[buff_pos] = color;
+
+        if (was_window_active) {
+            ppu->window_line++;
+        }   
+    }
+}
+
+
+static void PPU_sort_sprites(PPU *ppu, Sprite *sprites, int size) {
+    for (int i = 0; i < size; i++) {
+        Sprite sprite = sprites[i];
+
+    }
+}
+
+void PPU_RenderSprites(PPU *ppu, Sharp_MMU *mmu) {
+    if (!(ppu->LCDC >> 1) & 0x01) return;
+
+    if ((ppu->LCDC >> 2) & 0x01) {
+        // 8x16 tiles
+    } else {
+        // 8x8 tiles
+    }
+
+    Sprite sprite_buffer[10];
+    for (int sprite_i = 0; sprite_i < DMG_OAM; sprite_i++) {
+        Sprite sprite;
+
+        int spr_cord_y = (int)mmu_read(mmu, 0xfe00 + (sprite_i * 4)) - 16;
+        int spr_cord_x = (int)mmu_read(mmu, 0xfe00 + (sprite_i * 4) + 1) - 8;
+
+        int spr_height = (ppu->LCDC & (1 << 2)) ? 16 : 8;
+
+        if ((ppu->LY >= spr_cord_y) && (ppu->LY < (spr_cord_y + spr_height))) {
+            sprite.x = spr_cord_x;
+            sprite.y = spr_cord_y;
+            sprite.OAM_index = sprite_i;
+
+        }
+    }  
+
+    PPU_sort_sprites(ppu, sprite_buffer, sizeof(sprite_buffer)/sizeof(Sprite));
 }

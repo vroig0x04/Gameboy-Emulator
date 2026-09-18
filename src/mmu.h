@@ -3,6 +3,7 @@
 #define MMU_H
 
 #include <stdint.h>
+#include "ppu.h"
 
 /* Forward declaration to avoid circular include */
 struct Sharp_SM83;
@@ -11,7 +12,7 @@ struct Sharp_SM83;
 #define DMG_ROM_SIZE  16384 // 16KB
 #define DMG_VRAM_SIZE 8192  // 8KB
 #define DMG_WRAM_SIZE 8182  // 8KB divided in two blocks 
-#define DMG_OAM       160   // 40 sprites 4 bytes each
+
 
 typedef struct Sharp_MMU {
 
@@ -29,15 +30,6 @@ typedef struct Sharp_MMU {
     struct Sharp_SM83 *cpu;
     
 } Sharp_MMU;
-
-typedef struct {
-    uint8_t y;
-    uint8_t x;
-    uint8_t tile_index;
-    uint8_t flags;
-
-} Sprite;
-
 
 uint8_t mmu_read(Sharp_MMU *mmu, uint16_t a16);
 
