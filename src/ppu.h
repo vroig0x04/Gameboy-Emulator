@@ -56,6 +56,7 @@ typedef struct {
     int window_line; // line counter of window 
 
     uint8_t screen_buffer[SCN_HEIGHT * SCN_WIDTH]; // buffer to store rendered pixels
+    uint8_t bg_color_ids[160];
 
     uint8_t current_mode;
     uint8_t last_mode;

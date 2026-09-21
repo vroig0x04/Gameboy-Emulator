@@ -8,11 +8,6 @@
  * medium, is strictly prohibited. Proprietary and confidential.
  ******************************************************************************/
 
-/**
- * Gameboy's Picture Processing Unit (PPU). 
- * The PPU is in charge of rendering the background and sprites from VRAM to the screen. 
- * 
- */
 
 #include "ppu.h"
 
@@ -34,7 +29,16 @@ void PPU_Init(PPU *ppu) {
     ppu->last_mode = 0xff;
 }
 
-void PPU_Advance(PPU *ppu, int cycles) {
+void PPU_Advance(PPU *ppu, Sharp_MMU *mmu, int cycles) {
+    if (!(ppu->LCDC & (1 << 7))) {
+        ppu->current_dot = 0;
+        ppu->LY = 0;
+        ppu->window_line = 0;
+        ppu->STAT = (ppu->STAT & 0xfc) | MODE_HORIZONTAL_BLANK;
+        ppu->last_mode = MODE_HORIZONTAL_BLANK;
+        return;
+    }
+
     ppu->current_dot += cycles;
 
     while (ppu->current_dot >= DOTS) { 
@@ -45,23 +49,22 @@ void PPU_Advance(PPU *ppu, int cycles) {
             ppu->LY = 0;
             ppu->window_line = 0;
         }
-    }
 
-    // check if LY == LYC each time its value changes
-    if (ppu->LYC == ppu->LY) {
-        ppu->STAT |= (1 << 2); // Bit 2 is SET to 1
+        // check if LY == LYC each time its value changes
+        if (ppu->LYC == ppu->LY) {
+            ppu->STAT |= (1 << 2);
 
-        if (ppu->STAT & (1 << 6)) { // interrupt by coincidence
-            // LCD STAT Bit 1 of IF 
-        } else {
-            ppu->STAT |= ~(1 << 2);
+            if (ppu->STAT & (1 << 6)) { // interrupt by coincidence
+                // LCD STAT Bit 1 of IF 
+            } else {
+                ppu->STAT |= ~(1 << 2);
+            }
         }
     }
 
     if (ppu->LY >= 144) { // V-Blank from 144 to 153
         ppu->current_mode = MODE_VERTICAL_BLANK;
     } else {
-        // from 0 to 143
         if (ppu->current_dot < 80) {
             ppu->current_mode = MODE_OAM_SCAN;
         } else if (ppu->current_dot < 252) {
@@ -75,19 +78,32 @@ void PPU_Advance(PPU *ppu, int cycles) {
     ppu->STAT = (ppu->STAT & 0xfc ) | ppu->current_mode;
 
     // check if mode changed since last cycle to activate interrupts 
-
     if (ppu->current_mode != ppu->last_mode) {
-        ppu->last_mode = ppu->current_mode;
+        
+        if (ppu->current_mode == MODE_DRAWING_PIXELS) {
+            PPU_RenderScanline(ppu, mmu);
+
+            if (ppu->LCDC & (1 << 1)) {
+                PPU_RenderSprites(ppu, mmu);
+            }
+        }
 
         if (ppu->current_mode == MODE_HORIZONTAL_BLANK && (ppu->STAT & (1 << 3))) {
-            // LCD STAT interrupt
-        } else if (ppu->current_mode == MODE_VERTICAL_BLANK && (ppu->STAT & (1 << 4))) {
-            // LCD STAT interrupt as so as Bit 0 of IF 
-        } else if (ppu->current_mode == MODE_OAM_SCAN && (ppu->STAT & (1 << 5))) {
-            // LCD STAT interrupt
+            // TODO: LCD STAT interrupt
         }
-    }
+        else if (ppu->current_mode == MODE_VERTICAL_BLANK) {
+             // TODO: cpu->IF |= (1 << 0);
 
+             if (ppu->STAT & (1 << 4)) {
+                // TODO: LCD STAT (Bit 1 of IF)
+            }
+        }
+        else if (ppu->current_mode == MODE_OAM_SCAN && (ppu->STAT & (1 << 5))) {
+            // TODO: LCD STAT interrupt
+        }
+
+        ppu->last_mode = ppu->current_mode;
+    }
 }
 
 static int PPU_window_check(PPU *ppu, int pixel_x) {
@@ -162,6 +178,7 @@ void PPU_RenderScanline(PPU *ppu, Sharp_MMU *mmu) {
 
         // get final color from BGP register since each color is 2 bits in the register: color_id * 2
         uint8_t color = (ppu->BGP >> (color_id * 2)) & 0x03;
+        ppu->bg_color_ids[pixel_x] = color;
 
         int buff_pos = (ppu->LY * 160) + pixel_x;
         ppu->screen_buffer[buff_pos] = color;
@@ -172,24 +189,28 @@ void PPU_RenderScanline(PPU *ppu, Sharp_MMU *mmu) {
     }
 }
 
-
+/*  PPU_sort_sprites is a private function designed to order sprites by index.
+    Since it is expected to render a maximum of 10 sprites per scanline, 
+    an insertion sort alogorithm might be enough despite the O(n^2) cost
+*/
 static void PPU_sort_sprites(PPU *ppu, Sprite *sprites, int size) {
-    for (int i = 0; i < size; i++) {
-        Sprite sprite = sprites[i];
+    for (int i = 1; i < size; i++) {
+        Sprite k_sprite = sprites[i];
+        int j;
 
+        for (j = i - 1; j >= 0 && sprites[j].OAM_index < k_sprite.OAM_index; j--) {
+            sprites[i + 1] = sprites[j];
+        }
+        sprites[i + 1] = k_sprite;
     }
 }
 
 void PPU_RenderSprites(PPU *ppu, Sharp_MMU *mmu) {
     if (!(ppu->LCDC >> 1) & 0x01) return;
 
-    if ((ppu->LCDC >> 2) & 0x01) {
-        // 8x16 tiles
-    } else {
-        // 8x8 tiles
-    }
-
     Sprite sprite_buffer[10];
+    int visible_sprites = 0;
+
     for (int sprite_i = 0; sprite_i < DMG_OAM; sprite_i++) {
         Sprite sprite;
 
@@ -202,9 +223,59 @@ void PPU_RenderSprites(PPU *ppu, Sharp_MMU *mmu) {
             sprite.x = spr_cord_x;
             sprite.y = spr_cord_y;
             sprite.OAM_index = sprite_i;
-
+            visible_sprites++;
         }
     }  
 
-    PPU_sort_sprites(ppu, sprite_buffer, sizeof(sprite_buffer)/sizeof(Sprite));
+    PPU_sort_sprites(ppu, sprite_buffer, visible_sprites);
+
+    // render sprites from lower to mayor priority
+    for (int i = 0; i < visible_sprites; i++) {
+        Sprite sprite = sprite_buffer[i];
+    
+        int i_row = ppu->LY - sprite.y;
+
+        int spr_height = (ppu->LCDC & (1 << 2)) ? 16 : 8;
+        if (sprite.flags & (1 << 6)) {
+            i_row = (spr_height - 1) - i_row;
+        }
+
+        uint16_t vram_addr;
+        if (spr_height == 16) 
+        { // 8x16 tiles
+            uint8_t base_addr = (sprite.tile_index & 0xfe);
+            vram_addr = 0x8000 + (base_addr * 16);
+        } else 
+        { // 8x16 tiles
+            vram_addr = (sprite.tile_index * 16);
+        } 
+
+        uint8_t byte_1 = mmu_read(mmu, vram_addr + (i_row * 2));
+        uint8_t byte_2 = mmu_read(mmu, vram_addr + (i_row * 2) + 1);
+
+        int is_x_flip = (sprite.flags & (1 << 5)) ? 1 : 0;
+        for (int bit = 0; bit < 8; bit++) {
+            int pixel_x = sprite.x + bit;
+
+            if (pixel_x < 0 || pixel_x >= 160) continue;
+
+            int l_bit = is_x_flip ? bit : (7 - bit);
+
+            uint8_t bit1 = (byte_2 >> l_bit) & 1;
+            uint8_t bit0 = (byte_1 >> l_bit) & 1;
+            uint8_t color_id = (bit1 << 1) | bit0;
+
+            if (color_id) continue; // transparent pixel
+
+            uint8_t background_color_id = ppu->bg_color_ids[pixel_x];
+
+            if ((sprite.flags & (1 << 7)) && (background_color_id != 0)) continue; // background overlaps sprite's pixel
+
+            uint8_t obj_palette = (sprite.flags & (1 << 4)) ? ppu->OBP1 : ppu->OBP0;
+            uint8_t color = (obj_palette >> (color_id * 2)) & 0x03;
+
+            ppu->screen_buffer[(ppu->LY * 160) + pixel_x] = color;
+
+        }
+    }
 }
