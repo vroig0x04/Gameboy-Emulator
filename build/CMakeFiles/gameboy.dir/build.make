@@ -69,19 +69,19 @@ include CMakeFiles/gameboy.dir/progress.make
 # Include the compile flags for this target's objects.
 include CMakeFiles/gameboy.dir/flags.make
 
-CMakeFiles/gameboy.dir/src/main.c.o: CMakeFiles/gameboy.dir/flags.make
-CMakeFiles/gameboy.dir/src/main.c.o: /home/vnt0x04/GAMEBOY/src/main.c
-CMakeFiles/gameboy.dir/src/main.c.o: CMakeFiles/gameboy.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/vnt0x04/GAMEBOY/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building C object CMakeFiles/gameboy.dir/src/main.c.o"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/gameboy.dir/src/main.c.o -MF CMakeFiles/gameboy.dir/src/main.c.o.d -o CMakeFiles/gameboy.dir/src/main.c.o -c /home/vnt0x04/GAMEBOY/src/main.c
+CMakeFiles/gameboy.dir/src/test.c.o: CMakeFiles/gameboy.dir/flags.make
+CMakeFiles/gameboy.dir/src/test.c.o: /home/vnt0x04/GAMEBOY/src/test.c
+CMakeFiles/gameboy.dir/src/test.c.o: CMakeFiles/gameboy.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/vnt0x04/GAMEBOY/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building C object CMakeFiles/gameboy.dir/src/test.c.o"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/gameboy.dir/src/test.c.o -MF CMakeFiles/gameboy.dir/src/test.c.o.d -o CMakeFiles/gameboy.dir/src/test.c.o -c /home/vnt0x04/GAMEBOY/src/test.c
 
-CMakeFiles/gameboy.dir/src/main.c.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/gameboy.dir/src/main.c.i"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/vnt0x04/GAMEBOY/src/main.c > CMakeFiles/gameboy.dir/src/main.c.i
+CMakeFiles/gameboy.dir/src/test.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/gameboy.dir/src/test.c.i"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/vnt0x04/GAMEBOY/src/test.c > CMakeFiles/gameboy.dir/src/test.c.i
 
-CMakeFiles/gameboy.dir/src/main.c.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/gameboy.dir/src/main.c.s"
-	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/vnt0x04/GAMEBOY/src/main.c -o CMakeFiles/gameboy.dir/src/main.c.s
+CMakeFiles/gameboy.dir/src/test.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/gameboy.dir/src/test.c.s"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/vnt0x04/GAMEBOY/src/test.c -o CMakeFiles/gameboy.dir/src/test.c.s
 
 CMakeFiles/gameboy.dir/src/alu_SM83.c.o: CMakeFiles/gameboy.dir/flags.make
 CMakeFiles/gameboy.dir/src/alu_SM83.c.o: /home/vnt0x04/GAMEBOY/src/alu_SM83.c
@@ -167,30 +167,46 @@ CMakeFiles/gameboy.dir/src/apu.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/gameboy.dir/src/apu.c.s"
 	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/vnt0x04/GAMEBOY/src/apu.c -o CMakeFiles/gameboy.dir/src/apu.c.s
 
+CMakeFiles/gameboy.dir/src/window.c.o: CMakeFiles/gameboy.dir/flags.make
+CMakeFiles/gameboy.dir/src/window.c.o: /home/vnt0x04/GAMEBOY/src/window.c
+CMakeFiles/gameboy.dir/src/window.c.o: CMakeFiles/gameboy.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/vnt0x04/GAMEBOY/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building C object CMakeFiles/gameboy.dir/src/window.c.o"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/gameboy.dir/src/window.c.o -MF CMakeFiles/gameboy.dir/src/window.c.o.d -o CMakeFiles/gameboy.dir/src/window.c.o -c /home/vnt0x04/GAMEBOY/src/window.c
+
+CMakeFiles/gameboy.dir/src/window.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/gameboy.dir/src/window.c.i"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/vnt0x04/GAMEBOY/src/window.c > CMakeFiles/gameboy.dir/src/window.c.i
+
+CMakeFiles/gameboy.dir/src/window.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/gameboy.dir/src/window.c.s"
+	/usr/bin/cc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/vnt0x04/GAMEBOY/src/window.c -o CMakeFiles/gameboy.dir/src/window.c.s
+
 # Object files for target gameboy
 gameboy_OBJECTS = \
-"CMakeFiles/gameboy.dir/src/main.c.o" \
+"CMakeFiles/gameboy.dir/src/test.c.o" \
 "CMakeFiles/gameboy.dir/src/alu_SM83.c.o" \
 "CMakeFiles/gameboy.dir/src/flags_SM83.c.o" \
 "CMakeFiles/gameboy.dir/src/mmu.c.o" \
 "CMakeFiles/gameboy.dir/src/sharp_SM83.c.o" \
 "CMakeFiles/gameboy.dir/src/ppu.c.o" \
-"CMakeFiles/gameboy.dir/src/apu.c.o"
+"CMakeFiles/gameboy.dir/src/apu.c.o" \
+"CMakeFiles/gameboy.dir/src/window.c.o"
 
 # External object files for target gameboy
 gameboy_EXTERNAL_OBJECTS =
 
-gameboy: CMakeFiles/gameboy.dir/src/main.c.o
+gameboy: CMakeFiles/gameboy.dir/src/test.c.o
 gameboy: CMakeFiles/gameboy.dir/src/alu_SM83.c.o
 gameboy: CMakeFiles/gameboy.dir/src/flags_SM83.c.o
 gameboy: CMakeFiles/gameboy.dir/src/mmu.c.o
 gameboy: CMakeFiles/gameboy.dir/src/sharp_SM83.c.o
 gameboy: CMakeFiles/gameboy.dir/src/ppu.c.o
 gameboy: CMakeFiles/gameboy.dir/src/apu.c.o
+gameboy: CMakeFiles/gameboy.dir/src/window.c.o
 gameboy: CMakeFiles/gameboy.dir/build.make
 gameboy: /usr/local/lib/libSDL3.so.0.5.0
 gameboy: CMakeFiles/gameboy.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/vnt0x04/GAMEBOY/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Linking C executable gameboy"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/vnt0x04/GAMEBOY/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Linking C executable gameboy"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/gameboy.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.

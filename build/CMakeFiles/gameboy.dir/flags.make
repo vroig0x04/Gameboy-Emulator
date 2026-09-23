@@ -6,5 +6,5 @@ C_DEFINES =
 
 C_INCLUDES = -I/home/vnt0x04/GAMEBOY/src/include -I/home/vnt0x04/GAMEBOY/src/lib
 
-C_FLAGS = -g
+C_FLAGS = 
 

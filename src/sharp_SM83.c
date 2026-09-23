@@ -2,7 +2,6 @@
 #include "sharp_SM83.h"
 #include "alu_SM83.h"
 #include "flags_SM83.h"
-#include "mmu.h"
 
 void SM83_Init_Regs(Sharp_SM83 *cpu, int mode) {
     if (mode == 0) {

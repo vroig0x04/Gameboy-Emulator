@@ -11,10 +11,11 @@ set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "/home/vnt0x04/GAMEBOY/src/alu_SM83.c" "CMakeFiles/gameboy.dir/src/alu_SM83.c.o" "gcc" "CMakeFiles/gameboy.dir/src/alu_SM83.c.o.d"
   "/home/vnt0x04/GAMEBOY/src/apu.c" "CMakeFiles/gameboy.dir/src/apu.c.o" "gcc" "CMakeFiles/gameboy.dir/src/apu.c.o.d"
   "/home/vnt0x04/GAMEBOY/src/flags_SM83.c" "CMakeFiles/gameboy.dir/src/flags_SM83.c.o" "gcc" "CMakeFiles/gameboy.dir/src/flags_SM83.c.o.d"
-  "/home/vnt0x04/GAMEBOY/src/main.c" "CMakeFiles/gameboy.dir/src/main.c.o" "gcc" "CMakeFiles/gameboy.dir/src/main.c.o.d"
   "/home/vnt0x04/GAMEBOY/src/mmu.c" "CMakeFiles/gameboy.dir/src/mmu.c.o" "gcc" "CMakeFiles/gameboy.dir/src/mmu.c.o.d"
   "/home/vnt0x04/GAMEBOY/src/ppu.c" "CMakeFiles/gameboy.dir/src/ppu.c.o" "gcc" "CMakeFiles/gameboy.dir/src/ppu.c.o.d"
   "/home/vnt0x04/GAMEBOY/src/sharp_SM83.c" "CMakeFiles/gameboy.dir/src/sharp_SM83.c.o" "gcc" "CMakeFiles/gameboy.dir/src/sharp_SM83.c.o.d"
+  "/home/vnt0x04/GAMEBOY/src/test.c" "CMakeFiles/gameboy.dir/src/test.c.o" "gcc" "CMakeFiles/gameboy.dir/src/test.c.o.d"
+  "/home/vnt0x04/GAMEBOY/src/window.c" "CMakeFiles/gameboy.dir/src/window.c.o" "gcc" "CMakeFiles/gameboy.dir/src/window.c.o.d"
   )
 
 # Targets to which this target links which contain Fortran sources.

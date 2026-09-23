@@ -1,5 +1,6 @@
 
 #include <stdint.h>
+#include "mmu.h"
 
 #ifndef SHARP_SM83_H
 #define SHARP_SM83_H
@@ -82,12 +83,12 @@ typedef struct Sharp_SM83 {
     int EI;
     uint8_t IE; // interrupt enable
     uint8_t IF; // interrupt flag 
+
+    Sharp_MMU *mmu;
     
 
 } Sharp_SM83;
 
-/* Include MMU after Sharp_SM83 is defined to avoid circular dependency */
-#include "mmu.h"
 
 typedef enum {
     ALU_ADDR8  = 0,

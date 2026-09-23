@@ -7,6 +7,70 @@
  * medium, is strictly prohibited. Proprietary and confidential.
  ******************************************************************************/
 
+/**
+ * 
+ * GAME BOY PICTURE PROCESSING UNIT (PPU) - SUMMARY & ARCHITECTURE
+ * 
+ * The PPU is an independent graphics processor responsible for translating the
+ * data stored in VRAM (Video RAM) and OAM (Object Attribute Memory) into visual
+ * pixels on the Game Boy's LCD screen (160x144 pixels).
+ * 
+ * 1. GRAPHICS LAYERS:
+ *  - Background (BG): A giant 256x256 pixel wrapping map (32x32 tiles). Its
+ *    visible region is repositioned via the SCX and SCY registers.
+ *  - Window (WIN): A static overlay layer that displays text or HUD elements.
+ *    It ignores scrolling and is triggered by WX and WY registers, using an
+ *    internal line counter to ensure visual continuity.
+ *  - Sprites (OBJ): Up to 40 moving objects (max 10 rendered per scanline).
+ *    Supports 8x8 or 8x16 modes, vertical/horizontal flipping, and hardware-based
+ *    priority/transparency layers (Color index 0 is always transparent).
+ * 
+ * 2. PPU TIMING & OPERATIONAL MODES:
+ * The PPU operates continuously on a frame-by-frame basis. One complete frame
+ * takes 154 scanlines (70,224 dots / T-cycles). Each individual scanline
+ * lasts exactly 456 dots and cycles through specific hardware modes:
+ * 
+ *  - Mode 2 (OAM Scan): The first 80 dots. The PPU searches the 40 slots
+ *    of OAM memory to find up to 10 sprites that cross the current line (LY).
+ *  - Mode 3 (Drawing Pixels): Lasts between 172 to 289 dots depending on the
+ *    number of sprites on the line. Píxels are pushed to the LCD screen.
+ *    (In this scanline emulator, the entire line is rendered instantly upon 
+ *    entering Mode 3 for optimal performance).
+ *  - Mode 0 (Horizontal Blank / H-Blank): The remainder of the 456 dots.
+ *    The PPU enters a low-power state for the rest of the current line.
+ * 
+ * When LY reaches line 144, the screen drawing finishes, and the PPU spends
+ * lines 144 to 153 (~10 lines) in a single state:
+ *  - Mode 1 (Vertical Blank / V-Blank): Lasts 4560 dots. The CPU gains full,
+ *    unrestricted access to VRAM and OAM, making it the perfect window for
+ *    games to load new graphics, maps, or perform OAM DMA transfers.
+ * 
+ * 3. INTERRUPTS & SYNCHRONIZATION:
+ * The PPU updates the STAT register (0xFF41) to signal its current mode and 
+ * whether a matching scanline event occurred (LYC == LY). If enabled by the
+ * game, entering Mode 0, 1, 2, or achieving an LYC coincidence fires a 
+ * hardware LCD STAT Interrupt to allow on-the-fly graphical effects.
+ * 
+ * A general V-Blank interrupt is also fired natively upon entering Mode 1.
+ * 
+ * 4. EMULATION NOTES:
+ * If the LCDC register Bit 7 is set to 0, the PPU turns off completely. 
+ * The screen clears to blank white, registers LY and internal counters reset,
+ * and the mode forces H-Blank until re-enabled by the CPU.
+ * 
+ * 5. REFERENCES:
+ * The information presented here is largely based on the Pan Docs
+ * documentation. I do not claim ownership of the original material;
+ * it is referenced here as a resource to help readers understand
+ * how the PPU works.
+ *
+ * The information related to the Game Boy's architecture is based
+ * on Rodrigo Copetti's analysis. I do not claim ownership of that
+ * material either; it is referenced here as a resource to help
+ * readers understand the Game Boy's general architecture.
+ * 
+ */
+
 #include <stdint.h>
 #include "mmu.h"
 
@@ -22,23 +86,7 @@
 #define FPS 59.7        // the Game Boy runs slightly slower than 60 Hz, as one frame takes ~16.74 ms. 70224 dots
 
 
-/* The PPU is in charge of rendering the calculus performed by the CPU and is
-   exclusivelly connected to the 8KB of VRAM 
-   
-   Tiles are 8x8-pixel chunk of graphics and are stored in VRAM 0x8000 - 0x97FF
-   whith each tile taking 16 bytes. Capacity for 384 tiles. Tiles have a color depth of
-   2 bits per pixel, allowing 4 different monochromatic shades. Background/Windows displayable. 
-   If color 0: the object is transparent and the background and other objects can show through 
-*/
-
-
-/*
-    7                       6         5                      4                  3         2        1                 0
-LCD & PPU enable	Window tile map	Window enable	BG & Window tiles	BG tile map	  OBJ size	OBJ enable	BG & Window enable / priority
-
-*/
-
-typedef struct {
+typedef struct PPU {
     uint8_t LCDC; // LCD control (0xFF40)
     uint8_t STAT; // LCD state (0xFF41)
     uint8_t SCY;  // Y background displacement (0xFF42)
@@ -65,7 +113,7 @@ typedef struct {
 } PPU;
 
 /* all this modes are cycled during a one single PPU frame */
-typedef enum {
+typedef enum PPU_Mode {
     MODE_OAM_SCAN         = 2, // 0 - 79 dots, 160 bytes 
     MODE_DRAWING_PIXELS   = 3, // 80 - 251 dots    
     MODE_HORIZONTAL_BLANK = 0, // 252 - 455 dots
@@ -86,7 +134,7 @@ typedef enum {
 
         The gameboy is only able of drawing a total of 10 sprites per horizontal line
 */
-typedef struct {
+typedef struct Sprite {
     uint8_t y;  // y position on screen + 16
     uint8_t x;  // x psition on screen + 8
     uint8_t tile_index; // tile number (8x8 or 8x16)
@@ -97,7 +145,7 @@ typedef struct {
 } Sprite;
 
 void PPU_Init(PPU *ppu);
-void PPU_Advance(PPU *ppu, int cycles);  // advance PPU ticks acordding to current CPU cycles 
+void PPU_Advance(PPU *ppu, Sharp_MMU *mmu, int cycles);  // advance PPU ticks acordding to current CPU cycles 
 void PPU_RenderScanline(PPU *ppu, Sharp_MMU *mmu);
 void PPU_RenderSprites(PPU *ppu, Sharp_MMU *mmu);
 

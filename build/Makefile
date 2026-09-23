@@ -201,30 +201,6 @@ src/flags_SM83.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/gameboy.dir/build.make CMakeFiles/gameboy.dir/src/flags_SM83.c.s
 .PHONY : src/flags_SM83.c.s
 
-src/main.o: src/main.c.o
-.PHONY : src/main.o
-
-# target to build an object file
-src/main.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/gameboy.dir/build.make CMakeFiles/gameboy.dir/src/main.c.o
-.PHONY : src/main.c.o
-
-src/main.i: src/main.c.i
-.PHONY : src/main.i
-
-# target to preprocess a source file
-src/main.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/gameboy.dir/build.make CMakeFiles/gameboy.dir/src/main.c.i
-.PHONY : src/main.c.i
-
-src/main.s: src/main.c.s
-.PHONY : src/main.s
-
-# target to generate assembly for a file
-src/main.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/gameboy.dir/build.make CMakeFiles/gameboy.dir/src/main.c.s
-.PHONY : src/main.c.s
-
 src/mmu.o: src/mmu.c.o
 .PHONY : src/mmu.o
 
@@ -297,6 +273,54 @@ src/sharp_SM83.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/gameboy.dir/build.make CMakeFiles/gameboy.dir/src/sharp_SM83.c.s
 .PHONY : src/sharp_SM83.c.s
 
+src/test.o: src/test.c.o
+.PHONY : src/test.o
+
+# target to build an object file
+src/test.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/gameboy.dir/build.make CMakeFiles/gameboy.dir/src/test.c.o
+.PHONY : src/test.c.o
+
+src/test.i: src/test.c.i
+.PHONY : src/test.i
+
+# target to preprocess a source file
+src/test.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/gameboy.dir/build.make CMakeFiles/gameboy.dir/src/test.c.i
+.PHONY : src/test.c.i
+
+src/test.s: src/test.c.s
+.PHONY : src/test.s
+
+# target to generate assembly for a file
+src/test.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/gameboy.dir/build.make CMakeFiles/gameboy.dir/src/test.c.s
+.PHONY : src/test.c.s
+
+src/window.o: src/window.c.o
+.PHONY : src/window.o
+
+# target to build an object file
+src/window.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/gameboy.dir/build.make CMakeFiles/gameboy.dir/src/window.c.o
+.PHONY : src/window.c.o
+
+src/window.i: src/window.c.i
+.PHONY : src/window.i
+
+# target to preprocess a source file
+src/window.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/gameboy.dir/build.make CMakeFiles/gameboy.dir/src/window.c.i
+.PHONY : src/window.c.i
+
+src/window.s: src/window.c.s
+.PHONY : src/window.s
+
+# target to generate assembly for a file
+src/window.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/gameboy.dir/build.make CMakeFiles/gameboy.dir/src/window.c.s
+.PHONY : src/window.c.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -315,9 +339,6 @@ help:
 	@echo "... src/flags_SM83.o"
 	@echo "... src/flags_SM83.i"
 	@echo "... src/flags_SM83.s"
-	@echo "... src/main.o"
-	@echo "... src/main.i"
-	@echo "... src/main.s"
 	@echo "... src/mmu.o"
 	@echo "... src/mmu.i"
 	@echo "... src/mmu.s"
@@ -327,6 +348,12 @@ help:
 	@echo "... src/sharp_SM83.o"
 	@echo "... src/sharp_SM83.i"
 	@echo "... src/sharp_SM83.s"
+	@echo "... src/test.o"
+	@echo "... src/test.i"
+	@echo "... src/test.s"
+	@echo "... src/window.o"
+	@echo "... src/window.i"
+	@echo "... src/window.s"
 .PHONY : help
 
 

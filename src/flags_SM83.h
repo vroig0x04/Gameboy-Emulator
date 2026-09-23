@@ -9,6 +9,9 @@
  * medium, is strictly prohibited. Proprietary and confidential.
  ******************************************************************************/
 
+#ifndef FLAGS_SM83_H
+#define FLAGS_SM83_H
+
 /*
 Flag register (F) bits:
     7	6	5	4	3	2	1	0
@@ -22,7 +25,7 @@ Flag register (F) bits:
 
 */
 
-typedef enum {
+typedef enum SM83_Flags {
     FLAG_C = 0x10, 
     FLAG_H = 0x20,
     FLAG_N = 0x40,
@@ -32,3 +35,5 @@ typedef enum {
 
 void cpu_set_flag(Sharp_SM83 *cpu, uint8_t flag, int cond);
 uint8_t get_flag(Sharp_SM83 *cpu, uint8_t flag);
+
+#endif

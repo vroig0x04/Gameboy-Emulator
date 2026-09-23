@@ -8,7 +8,6 @@
  * medium, is strictly prohibited. Proprietary and confidential.
  ******************************************************************************/
 
-
 #include "ppu.h"
 
 /* PPU registers are initzialiced to 0 since Boot ROM (256 bytes) will change their values */

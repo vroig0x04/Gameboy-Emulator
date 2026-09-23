@@ -15,4 +15,5 @@ CMakeFiles/gameboy.dir/src/ppu.c.o: /home/vnt0x04/GAMEBOY/src/ppu.c \
  /usr/include/x86_64-linux-gnu/bits/wchar.h \
  /usr/include/x86_64-linux-gnu/bits/stdint-intn.h \
  /usr/include/x86_64-linux-gnu/bits/stdint-uintn.h \
- /usr/include/x86_64-linux-gnu/bits/stdint-least.h
+ /usr/include/x86_64-linux-gnu/bits/stdint-least.h \
+ /home/vnt0x04/GAMEBOY/src/mmu.h

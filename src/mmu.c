@@ -20,6 +20,13 @@
     - SGB: Mapped to 0000h – 00FFh.- CGB: Mapped to 0000h – 00FFh and 0200h – 08FFh
 */
 
+int mbc_read_rom_bank_x(uint8_t *cartridge, uint16_t addr) {
+
+}
+
+int io_registers_read(Sharp_MMU *mmu, uint16_t addr) {
+
+}
 
 uint8_t mmu_read(Sharp_MMU *mmu, uint16_t addr) {
     /* reaading will be done here eventuaylly */

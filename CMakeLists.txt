@@ -14,13 +14,14 @@ include_directories(src/include
 
 # first name of list -> executable
 add_executable(gameboy 
-        src/main.c 
+        src/main.c
         src/alu_SM83.c 
         src/flags_SM83.c 
         src/mmu.c 
         src/sharp_SM83.c
         src/ppu.c 
         src/apu.c
+        src/window.c
 )
 
 target_link_libraries(gameboy PRIVATE SDL3::SDL3)
