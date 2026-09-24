@@ -5,5 +5,5 @@ Since this is a personal project, It might take a while between the last commit 
 
 This software is Copyright and should not be distributed via any medium.
 
-Vicent Roig. 
+Vicent Roig.
 
